@@ -1,1 +1,4 @@
-# How to use this script
+# How to use these script
+
+# Usage stem-loop_predictor_public.py
+python stem-loop_predictor_public.py -i=miRNAs.fold -s=25 -m=10 -ms 6

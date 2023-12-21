@@ -37,7 +37,6 @@ def main():
 	parser.add_argument('-o', '--outDir', dest = 'outDir', action = 'store', default = '../results/',
 						help = "Input file name (EX: regions.fa)")
 	
-	#~ parser.add_argument('-d', '--inDir', dest = 'inDir', action = 'store', default = None,
 	parser.add_argument('-d', '--inDir', dest = 'inDir', action = 'store', default = '../data/',
 						help = "Directory containing input files")
 	
@@ -98,7 +97,6 @@ def stem(name,fold,seq,options,file_name_all_structures):
 
 	hloop_positions = list()
 	
-	# print bg.to_element_string(with_numbers=True)
 	
 	for hloop in bg.hloop_iterator():
 		(i,j) = bg.get_flanking_region(hloop)
@@ -107,7 +105,6 @@ def stem(name,fold,seq,options,file_name_all_structures):
 	
 	original_name = name.replace('>','').split(" ")
 	
-	### END FIX
 			
 	for hloop_pos in  hloop_positions:
 		found = False
@@ -120,7 +117,6 @@ def stem(name,fold,seq,options,file_name_all_structures):
 		nro_loops_ant = 0
 		
 		for element in bg.iter_elements_along_backbone(hloop_pos):
-			# print element
 			
 			element_type = element[0]
 			# hairpin loop
@@ -143,10 +139,7 @@ def stem(name,fold,seq,options,file_name_all_structures):
 
 			# Stem 
 			elif(element_type == 's'):
-				# TODO: Ver bien esto
-				#~ if (last_element_type == 's'):
-					#~ continue
-					
+
 				stem_length = stem_length + bg.get_length(element)
 				
 				
@@ -177,7 +170,6 @@ def stem(name,fold,seq,options,file_name_all_structures):
 
 			all_mm = mm_sizes
 			
-			# print "ALL MM",all_mm,
 				
 			if (stem_length >= int(options.stemsize) ):
 				if (sum(all_mm[:-1]) <=  int(options.mismatches)):
@@ -220,8 +212,7 @@ def stem(name,fold,seq,options,file_name_all_structures):
 		mm = st[3]
 		seq = st[5]
 		struct = st[6]
-		#~ print seq
-		#~ print struct
+
 
 def write_to_csv(file_name,data):
 
@@ -233,17 +224,10 @@ def write_to_csv(file_name,data):
 			
 def int_loop(fold,seq,nro_loops_ant):
 
-	# Depricated
-	# bg = fgb.BulgeGraph()
-	# bg.from_dotbracket(fold)
-	# bg = fgb.BulgeGraph.from_dotbracket(fold)
-	
 	foldStr = ''.join([str(elem) for elem in fold])
 
 	bg = fgb.BulgeGraph.from_dotbracket(foldStr)
 	
-	# This is because iter_elements_along_backbone Iterate all coarse grained elements along the backbone.
-	# But, interior loops may be yielded twice or once (if one side has no nucleotide)
 
 	loops = list()
 		
@@ -254,8 +238,8 @@ def int_loop(fold,seq,nro_loops_ant):
 
 		if (i == 0):
 			# Ommit this because is already count in iter_elements_along_backbone
-			# asymetric_bulges.append(j)
 			continue
+			
 		if (j == 0):
 
 			loops.append(float(i))
