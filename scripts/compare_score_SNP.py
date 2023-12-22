@@ -11,9 +11,13 @@ import argparse
 
 
 parser = argparse.ArgumentParser(description='Compare score')
+
 parser.add_argument('-sp', dest='specie', action='store', help='Get specie')
+
 parser.add_argument('-threshold', dest='threshold', action='store', help='Get threshold')
+
 parser.add_argument('-window', dest='window', action='store', help='Get window size')
+
 parser.add_argument('-utr', dest='utr', action='store', help='Get window size')
 
 def map_int(n):

@@ -134,7 +134,6 @@ def stem(name,fold,seq,options,file_name_all_structures):
 				else:
 					mm_sizes.append(bg.get_length(element))
 				if (j == 0):
-					# No deberia entrar nunca, pero por las dudas lo omito porque lo cuento despues
 					continue
 
 			# Stem 
