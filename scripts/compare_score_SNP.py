@@ -24,8 +24,8 @@ def map_int(n):
 		
 def get_score(score_dir,nextPARS_name):
 	file_open = score_dir + "/"  + nextPARS_name + ".csv"
-	# ~ print(file_open)
 	score  = pd.read_csv(file_open,sep=';',header=None,index_col = 0) 
+
 	# Remove last element
 	return score.iloc[:, :-1]
 
@@ -43,8 +43,8 @@ def get_positions(specie,target,window,utr):
 	
 	return var_annot['cDNA_position'].tolist()
 	
-score_path ='/home/ucielp/ChorosteckiLab/GabaldonLab/projects/MULTI-FOLDS/nextPARS/temperatures/processing/' 
-variants_dir = '/home/ucielp/ChorosteckiLab/GabaldonLab/projects/MULTI-FOLDS/nextPARS/temperatures/processing/scripts_candida/miki_data/parse_data/'
+score_path ='score_path/' 
+variants_dir = 'variants_path/'
 
 def get_data_by_specie(specie,threshold,score_dir,pattern_to_search,window,utr):
 
@@ -80,15 +80,9 @@ def get_data_by_specie(specie,threshold,score_dir,pattern_to_search,window,utr):
 		
 		all_positions = range(1,score_df.shape[1]+1,1)
 		
-		# 
 		neg_positions = [x for x in all_positions if x not in positions]
 		df_neg = score_df[score_df.columns.intersection(neg_positions)].T
 		
-		# instead of saving the mean i will save all the data
-		# score_list.append((score_df.T[target].mean(),df_pos[target].mean(),df_neg[target].mean()))
-		
-		
-		# Ommit all
 		df_neg['SNP'] = 0
 		df_pos['SNP'] = 1
 		
@@ -101,7 +95,6 @@ def get_data_by_specie(specie,threshold,score_dir,pattern_to_search,window,utr):
 
 		df_result['gene'] = target
 		
-		# ~ print(df_result)
 		
 		df_list.append(df_result)
 		
@@ -110,19 +103,6 @@ def get_data_by_specie(specie,threshold,score_dir,pattern_to_search,window,utr):
 	all_df.to_csv(out_csv,index=False)	
 	
 	return all_df
-
-# Este método es de otro lado pero me puede servir
-def get_strand(gene_full,suffix):
-
-	import pyranges as pr
-
-	bed_file = '/home/uchorostecki/lab/uchorostecki/projects/MULTI-FOLDS/nextPARS/temperatures/processing/DB/C_glabatra/candida_glabrata' +suffix  + '.bed'
-	
-	gr = pr.read_bed(bed_file)
-	
-	df = gr.df
-	gene_row = df.loc[df['Name'] == gene_full]
-	return gene_row 
 
 def density_plot(df,specie,window,utr):
 
@@ -148,66 +128,34 @@ def density_plot(df,specie,window,utr):
 		
 def compare_score(specie,threshold,window,utr):
 	
-	if specie == 'all':
 		
-		list_of_species = ('glabrata','parapsilosis')
-		frames = list()
-		for specie in list_of_species:
-			print("ES la especie: ",specie)
-			if specie == 'albicans':
-				score_dir = score_path + '/score_files_' + specie + '_polyA_one_alelle/'
-				pattern_to_search = "*-T-E1.csv"
-				# IMPORTANT TODO: modify this
-				# pattern_to_search = "C1_09*-T-E1.csv"
-			elif specie == 'parapsilosis':
-				# TODO: modify the temperature
-				score_dir = score_path + '/score_files_' + specie + '_candida_mine/23'
-				pattern_to_search = "exon*.csv"
-			elif specie == 'tropicalis':
-				score_dir = score_path + '/score_files_' + specie + '_candida_mine/'
-				pattern_to_search = "exon*.csv"
-				# ~ pattern_to_search = "exon-XM_0025451*.csv"
-			else:
-				# ~ score_dir = score_path + '/score_files_' + specie 
-				score_dir = score_path + '/score_files_' + specie + '_' + utr + 'UTR'
-				pattern_to_search = "*.csv"
-				# IMPORTANT TODO: modify this
-				# pattern_to_search = "C1_08*-T-E1.csv"
-			score_df = get_data_by_specie(specie,threshold,score_dir,pattern_to_search,window,utr)
-			
-			# Old plot
-			# bar_plot(score_df,specie)
-			density_plot(score_df,specie,window,utr)
-		
-			score_df['specie'] = specie
-			frames.append(score_df)
-			
-		# TODO: check this
-		all_df = pd.concat(frames)
-		out_csv = variants_dir + '../cinta_output/all_' + str(window) + '_' + utr + 'UTR.csv'
-		all_df.to_csv(out_csv,index=False)	
-		
-		# Ommit this plot
-		# bar_plot(all_df,'all')
-	
-	else:
+	list_of_species = ('glabrata','parapsilosis')
+	frames = list()
+	for specie in list_of_species:
+		print("ES la especie: ",specie)
 		if specie == 'albicans':
 			score_dir = score_path + '/score_files_' + specie + '_polyA_one_alelle/'
 			pattern_to_search = "*-T-E1.csv"
-			# TODO: modify this
-			# pattern_to_search = "C1_09*-T-E1.csv"
 		elif specie == 'parapsilosis':
-			# TODO:check other temperatures
 			score_dir = score_path + '/score_files_' + specie + '_candida_mine/23'
 			pattern_to_search = "exon*.csv"
 		elif specie == 'tropicalis':
 			score_dir = score_path + '/score_files_' + specie + '_candida_mine/'
 			pattern_to_search = "exon*.csv"
 		else:
-			score_dir = score_path + '/score_files_' + specie 
-			pattern_to_search = "*-T-E1.csv"
+			score_dir = score_path + '/score_files_' + specie + '_' + utr + 'UTR'
+			pattern_to_search = "*.csv"
+		score_df = get_data_by_specie(specie,threshold,score_dir,pattern_to_search,window,utr)
 		
-
+		density_plot(score_df,specie,window,utr)
+	
+		score_df['specie'] = specie
+		frames.append(score_df)
+		
+	all_df = pd.concat(frames)
+	out_csv = variants_dir + '../cinta_output/all_' + str(window) + '_' + utr + 'UTR.csv'
+	all_df.to_csv(out_csv,index=False)	
+	
 	
 args = parser.parse_args()
 compare_score(args.specie,float(args.threshold),int(args.window),str(args.utr))
